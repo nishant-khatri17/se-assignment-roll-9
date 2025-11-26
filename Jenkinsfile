@@ -5,6 +5,8 @@ pipeline {
         // Naming repo as per roll number instruction
         DOCKER_IMAGE = 'nishantkhatri17/roll-number-9'
         REGISTRY_CREDENTIALS_ID = 'dockerhub-creds'
+        // ADD THIS LINE BELOW to tell Jenkins where Docker is on your Mac:
+        PATH = "/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$PATH"
     }
 
     stages {
