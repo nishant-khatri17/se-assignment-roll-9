@@ -48,9 +48,15 @@ pipeline {
             steps {
                 echo 'Pushing to DockerHub...'
                 script {
-                    docker.withRegistry('', REGISTRY_CREDENTIALS_ID) {
-                        dockerImage.push()
-                        dockerImage.push('latest')
+                    // We use 'sh' commands here because they respect the PATH variable we set earlier
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', passwordVariable: 'DOCKER_PASS', usernameVariable: 'DOCKER_USER')]) {
+                        // 1. Log in to Docker Hub
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                        // 2. Push the versioned image
+                        sh "docker push ${DOCKER_IMAGE}:${env.BUILD_NUMBER}"
+                        // 3. Push the 'latest' tag (optional but good practice)
+                        sh "docker tag ${DOCKER_IMAGE}:${env.BUILD_NUMBER} ${DOCKER_IMAGE}:latest"
+                        sh "docker push ${DOCKER_IMAGE}:latest"
                     }
                 }
             }
